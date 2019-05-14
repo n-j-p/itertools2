@@ -1,5 +1,5 @@
-def permutations_multiset(multiset):
-    '''permutations_multiset(mutliset) --> permutations generator
+def permutations_multiset(multiset, r=None):
+    '''permutations_multiset(mutliset[, r]) --> permutations generator
     
     Return successive permutations of elements in a multiset.
     itertools.permutations returns repeated permutations when the 
@@ -17,14 +17,24 @@ def permutations_multiset(multiset):
         (0, 2, 1, 1),
         (2, 1, 1, 0),
         (2, 1, 0, 1),
-        (2, 0, 1, 1)'''
+        (2, 0, 1, 1)
+    
+    r parameter is identical to that in it.permutations, e.g.:
+    permutations_multiset([1,1,2]) -->
+        (1, 1),
+        (1, 2),
+        (2, 1)'''
     elements, multiplicities = _get_multiplicities(multiset)
     return _permutations_multiset_from_multiplicities(elements,
-                                                      multiplicities)
+                                                      multiplicities,
+                                                      r)
 
-def _permutations_multiset_from_multiplicities(elements, multiplicities):
+def _permutations_multiset_from_multiplicities(elements, multiplicities, r):
     import itertools as it
-    if max(multiplicities) == 1:
+    if r == 1:
+        for x in elements:
+            yield (x,)
+    elif max(multiplicities) == 1:
         for x in it.permutations(elements):
             yield x
     elif len(multiplicities) == 1:
@@ -34,13 +44,15 @@ def _permutations_multiset_from_multiplicities(elements, multiplicities):
             if multiplicities[i] == 1:
                 g = _permutations_multiset_from_multiplicities(elements[:i] +\
                                  elements[(i+1):],
-                                 multiplicities[:i] + multiplicities[(i+1):])
+                                 multiplicities[:i] + multiplicities[(i+1):],
+                                 r-1)
 
             else:
                 g = _permutations_multiset_from_multiplicities(elements,
                                  multiplicities[:i] + \
                                  (multiplicities[i] - 1,) + \
-                                 multiplicities[(i+1):])
+                                 multiplicities[(i+1):],
+                                 r-1)
             for y in g:
                 yield (x,) + y
 def combinations_multiset(multiset, r):
