@@ -25,6 +25,8 @@ def permutations_multiset(multiset, r=None):
         (1, 2),
         (2, 1)'''
     elements, multiplicities = _get_multiplicities(multiset)
+    if r is None:
+        r = sum(multiplicities)
     return _permutations_multiset_from_multiplicities(elements,
                                                       multiplicities,
                                                       r)
